@@ -46,7 +46,7 @@ export default function StatementScreen() {
     const dueBalance = parseFloat(e.due_balance) || 0;
     
     const remaining = osAmount - partReceived - dueBalance;
-    return s + (remaining > 0 ? remaining : 0);
+    return s + remaining;
   }, 0);
 
   return (
