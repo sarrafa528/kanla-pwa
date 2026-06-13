@@ -69,7 +69,7 @@ export default function App() {
       }
 
       // Password hash compare karo
-      const isValidPassword = await bcrypt.compare(password, data.password);
+      const isValidPassword = password === data.password;
 
       if (!isValidPassword) {
         setError('Invalid User ID or Password');
