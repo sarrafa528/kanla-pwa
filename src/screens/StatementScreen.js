@@ -41,12 +41,11 @@ export default function StatementScreen() {
   };
 
   const totalOS = sales.reduce((s, e) => {
-    const grossAmount = parseFloat(e.gross_amount) || 0;
-    const received = parseFloat(e.amt_received) || 0;
+    const osAmount = parseFloat(e.amt_os) || 0;
     const partReceived = parseFloat(e.part_received) || 0;
     const dueBalance = parseFloat(e.due_balance) || 0;
     
-    const remaining = grossAmount - received - partReceived - dueBalance;
+    const remaining = osAmount - partReceived - dueBalance;
     return s + (remaining > 0 ? remaining : 0);
   }, 0);
 
@@ -105,8 +104,8 @@ export default function StatementScreen() {
               </div>
               <div style={{display:'flex', justifyContent:'space-between', marginTop:'4px', fontSize:'12px'}}>
                 <span style={{color:'var(--green)'}}>Received: ₹{((s.amt_received||0)+(s.part_received||0)).toLocaleString('en-IN')}</span>
-                <span style={{color: ((parseFloat(s.gross_amount)||0) - (parseFloat(s.amt_received)||0) - (parseFloat(s.part_received)||0) - (parseFloat(s.due_balance)||0)) > 0 ? 'var(--red)' : 'var(--text-3)', fontWeight:700}}>
-                  O/S: ₹{(Math.max(0, (parseFloat(s.gross_amount)||0) - (parseFloat(s.amt_received)||0) - (parseFloat(s.part_received)||0) - (parseFloat(s.due_balance)||0))).toLocaleString('en-IN')}
+                <span style={{color: ((parseFloat(s.amt_os)||0) - (parseFloat(s.part_received)||0) - (parseFloat(s.due_balance)||0)) > 0 ? 'var(--red)' : 'var(--text-3)', fontWeight:700}}>
+                  O/S: ₹{(Math.max(0, (parseFloat(s.amt_os)||0) - (parseFloat(s.part_received)||0) - (parseFloat(s.due_balance)||0))).toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
