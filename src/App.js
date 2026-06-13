@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import bcrypt from 'bcryptjs';
 import './App.css';
 import { supabase } from './supabaseClient';
 import CashScreen from './screens/CashScreen';
@@ -59,10 +60,18 @@ export default function App() {
         .from('users')
         .select('*')
         .eq('user_id', userId)
-        .eq('password', password)
         .single();
 
       if (supabaseError || !data) {
+        setError('Invalid User ID or Password');
+        setLoginLoading(false);
+        return;
+      }
+
+      // Password hash compare karo
+      const isValidPassword = await bcrypt.compare(password, data.password);
+
+      if (!isValidPassword) {
         setError('Invalid User ID or Password');
         setLoginLoading(false);
         return;
