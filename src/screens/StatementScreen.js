@@ -33,9 +33,7 @@ export default function StatementScreen() {
   };
 
   const totalOS = sales.reduce((s, e) => s + ((e.amt_os || 0) - (e.part_received || 0) - (e.due_balance || 0)), 0);
-  const totalGross = sales.reduce((s, e) => s + (e.gross_amount || 0), 0);
-  const totalReceived = sales.reduce((s, e) => s + (e.amt_received || 0) + (e.part_received || 0), 0);
-
+  
   return (
     <div>
       <div className="card">
