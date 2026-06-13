@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Kanla",
+  "name": "Kanla Corporation - Bullion Trader",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +10,20 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#B8860B",
+  "background_color": "#ffffff",
+  "scope": "/",
+  "description": "KanlaERP - Professional Bullion Trading Management System"
 }
