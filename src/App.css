@@ -119,22 +119,22 @@ body{
 .header{
   background:var(--white);
   border-bottom:1px solid var(--border);
-  padding:10px 20px 8px;
+  padding:8px 16px 6px;
   position:sticky; top:0; z-index:100;
 }
 .header-shyam{font-size:10px; color:var(--gold); letter-spacing:2px; font-style:italic; font-weight:500; text-align:center; margin-bottom:4px}
 .header-row{display:flex; align-items:center; justify-content:space-between}
-.header-brand{font-family:'DM Serif Display',serif; font-size:17px; color:var(--text)}
-.header-sub{font-size:9px; color:var(--text-3); letter-spacing:1px; margin-top:1px}
+.header-brand{font-family:'DM Serif Display',serif; font-size:14px; color:var(--text)}
+.header-sub{font-size:8px; color:var(--text-3); letter-spacing:0.5px; margin-top:0px}
 
-.screen-wrap{flex:1; overflow-y:auto; padding:16px 16px 90px}
+.screen-wrap{flex:1; overflow-y:auto; padding:12px 12px 90px}
 
 .card{
   background:var(--white);
   border:1px solid var(--border);
   border-radius:var(--radius-lg);
-  padding:16px;
-  margin-bottom:12px;
+  padding:12px 14px;
+  margin-bottom:10px;
   box-shadow:var(--shadow);
 }
 .sec-label{font-size:10px; font-weight:700; color:var(--text-3); letter-spacing:1.2px; text-transform:uppercase; margin-bottom:8px}
