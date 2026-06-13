@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import bcrypt from 'bcryptjs';
+const isValidPassword = password === data.password;
 import './App.css';
 import { supabase } from './supabaseClient';
 import CashScreen from './screens/CashScreen';
