@@ -23,17 +23,33 @@ export default function StatementScreen() {
     setSelected(customerName);
     if (!customerName) { setSales([]); return; }
     setLoading(true);
+    
+    const normalizedName = customerName.trim().toLowerCase();
+    
     const { data, error } = await supabase
       .from('saleslog')
       .select('*')
-      .eq('customer_name', customerName)
       .order('id', { ascending: false });
-    if (!error && data) setSales(data);
+    
+    if (!error && data) {
+      const filteredSales = data.filter(sale => 
+        sale.customer_name?.trim().toLowerCase() === normalizedName
+      );
+      setSales(filteredSales);
+    }
     setLoading(false);
   };
 
-  const totalOS = sales.reduce((s, e) => s + ((e.amt_os || 0) - (e.part_received || 0) - (e.due_balance || 0)), 0);
-  
+  const totalOS = sales.reduce((s, e) => {
+    const grossAmount = parseFloat(e.gross_amount) || 0;
+    const received = parseFloat(e.amt_received) || 0;
+    const partReceived = parseFloat(e.part_received) || 0;
+    const dueBalance = parseFloat(e.due_balance) || 0;
+    
+    const remaining = grossAmount - received - partReceived - dueBalance;
+    return s + (remaining > 0 ? remaining : 0);
+  }, 0);
+
   return (
     <div>
       <div className="card">
@@ -89,8 +105,8 @@ export default function StatementScreen() {
               </div>
               <div style={{display:'flex', justifyContent:'space-between', marginTop:'4px', fontSize:'12px'}}>
                 <span style={{color:'var(--green)'}}>Received: ₹{((s.amt_received||0)+(s.part_received||0)).toLocaleString('en-IN')}</span>
-                <span style={{color: ((s.amt_os||0)-(s.part_received||0)-(s.due_balance||0)) > 0 ? 'var(--red)' : 'var(--text-3)', fontWeight:700}}>
-                  O/S: ₹{((s.amt_os||0)-(s.part_received||0)-(s.due_balance||0)).toLocaleString('en-IN')}
+                <span style={{color: ((parseFloat(s.gross_amount)||0) - (parseFloat(s.amt_received)||0) - (parseFloat(s.part_received)||0) - (parseFloat(s.due_balance)||0)) > 0 ? 'var(--red)' : 'var(--text-3)', fontWeight:700}}>
+                  O/S: ₹{(Math.max(0, (parseFloat(s.gross_amount)||0) - (parseFloat(s.amt_received)||0) - (parseFloat(s.part_received)||0) - (parseFloat(s.due_balance)||0))).toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
