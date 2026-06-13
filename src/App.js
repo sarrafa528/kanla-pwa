@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-const isValidPassword = password === data.password;
 import './App.css';
 import { supabase } from './supabaseClient';
 import CashScreen from './screens/CashScreen';
@@ -68,7 +67,7 @@ export default function App() {
         return;
       }
 
-      // Password hash compare karo
+      // Plain text password match (temporary)
       const isValidPassword = password === data.password;
 
       if (!isValidPassword) {
@@ -137,7 +136,6 @@ export default function App() {
     return lastSync.toLocaleDateString();
   };
 
-  // ── LOADING SCREEN ──
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg)' }}>
@@ -149,7 +147,6 @@ export default function App() {
     );
   }
 
-  // ── LOGIN SCREEN ──
   if (!user) {
     return (
       <div className="login-container" style={{
@@ -299,7 +296,6 @@ export default function App() {
     );
   }
 
-  // ── WELCOME SCREEN ──
   if (!showWelcome) {
     return (
       <div className="welcome-container" style={{
@@ -363,7 +359,6 @@ export default function App() {
     );
   }
 
-  // ── MAIN APP ──
   return (
     <div className="app">
       <div className="header">
