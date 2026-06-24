@@ -64,8 +64,8 @@ export default function StatementScreen() {
   }, 0);
 
   const metalColor = (metal) => metal === 'Gold'
-    ? { bg: '#FEF5E4', color: '#854F0B', dot: '#D4AF37' }
-    : { bg: '#E6F1FB', color: '#185FA5', dot: '#185FA5' };
+    ? { bg: 'rgba(212,175,55,0.15)', color: '#D4AF37', dot: '#D4AF37' }
+    : { bg: 'rgba(59,130,246,0.15)', color: '#60A5FA', dot: '#60A5FA' };
 
   return (
     <div style={{ paddingBottom: '20px' }}>
@@ -87,13 +87,14 @@ export default function StatementScreen() {
             style={{
               width: '100%',
               padding: '11px 40px 11px 14px',
-              background: 'var(--bg)',
-              border: '1.5px solid var(--border-strong)',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 'var(--radius)',
               fontSize: '14px',
               color: 'var(--text)',
               outline: 'none',
               boxSizing: 'border-box',
+              fontFamily: 'Inter, sans-serif',
             }}
           />
           {searchText && (
@@ -150,10 +151,10 @@ export default function StatementScreen() {
 
       {/* TOTAL OS CARD */}
       {selected && !loading && (
-        <div className="card" style={{ background: totalOS > 0 ? '#FFF5F5' : '#F0FFF4', border: `1.5px solid ${totalOS > 0 ? '#FFCDD2' : '#C8E6C9'}` }}>
+        <div className="card" style={{ background: totalOS > 0 ? 'var(--red-bg)' : 'var(--green-bg)', border: `1px solid ${totalOS > 0 ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}` }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '10px', fontWeight: '700', color: totalOS > 0 ? '#C62828' : '#2E7D32', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '700', color: totalOS > 0 ? 'var(--red)' : 'var(--green)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px' }}>
                 Total Outstanding
               </div>
               <div style={{ fontSize: '22px', fontWeight: '800', color: totalOS > 0 ? 'var(--red)' : 'var(--green)' }}>

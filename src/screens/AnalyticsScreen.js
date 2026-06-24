@@ -45,6 +45,8 @@ export default function AnalyticsScreen() {
   const silver = summary.silver_purity_wise || [];
   const maxGold = Math.max(...gold.map(g => Math.abs(g.physical || 0)), 1);
   const maxSilver = Math.max(...silver.map(s => Math.abs(s.netStock || 0)), 1);
+  const GOLD_COLORS_DARK = ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EF4444','#06B6D4','#A16207'];
+  const SILVER_COLORS_DARK = ['#94A3B8','#64748B'];
 
   const lowStock = (summary.total_available_gold || 0) < 300;
 
@@ -111,7 +113,7 @@ export default function AnalyticsScreen() {
               <div style={{
                 height:'100%', borderRadius:'3px',
                 width: `${Math.min(100, (Math.abs(g.physical)/maxGold)*100)}%`,
-                background: g.physical < 0 ? 'var(--red)' : GOLD_COLORS[i % GOLD_COLORS.length],
+                background: g.physical < 0 ? 'var(--red)' : GOLD_COLORS_DARK[i % GOLD_COLORS_DARK.length],
                 transition:'width 0.6s ease'
               }} />
             </div>
@@ -143,7 +145,7 @@ export default function AnalyticsScreen() {
               <div style={{
                 height:'100%', borderRadius:'3px',
                 width: `${Math.min(100, (Math.abs(sl.netStock)/maxSilver)*100)}%`,
-                background: sl.netStock < 0 ? 'var(--red)' : SILVER_COLORS[i % SILVER_COLORS.length],
+                background: sl.netStock < 0 ? 'var(--red)' : SILVER_COLORS_DARK[i % SILVER_COLORS_DARK.length],
                 transition:'width 0.6s ease'
               }} />
             </div>
@@ -199,7 +201,7 @@ export default function AnalyticsScreen() {
         <div className="card" style={{
           margin:0, padding:'14px',
           background: lowStock ? 'var(--red-bg)' : 'var(--green-bg)',
-          border: `1px solid ${lowStock ? '#FFCDD2' : '#A5D6A7'}`
+          border: `1px solid ${lowStock ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}`
         }}>
           <div style={{
             width:'34px', height:'34px', borderRadius:'10px',

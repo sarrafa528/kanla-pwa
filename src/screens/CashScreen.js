@@ -41,6 +41,36 @@ export default function CashScreen() {
       setLoading(false);
     };
     fetchData();
+
+    // Realtime listener — INSERT aur DELETE dono
+    const channel = supabase
+      .channel('cash_ledger_pwa')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'cash_ledger' },
+        (payload) => {
+          const n = payload.new;
+          setAllEntries(prev => {
+            if (prev.find(e => e.id === n.id)) return prev;
+            return [n, ...prev];
+          });
+          setTodayEntries(prev => {
+            if (n.date !== today) return prev;
+            if (prev.find(e => e.id === n.id)) return prev;
+            return [n, ...prev];
+          });
+        }
+      )
+      .on('postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'cash_ledger' },
+        (payload) => {
+          const deletedId = payload.old.id;
+          setAllEntries(prev => prev.filter(e => e.id !== deletedId));  
+          setTodayEntries(prev => prev.filter(e => e.id !== deletedId));
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [today]);
 
   const balance = allEntries.reduce((s, e) => s + (e.total || 0), 0);
@@ -85,13 +115,14 @@ export default function CashScreen() {
   const inp = {
     width: '100%',
     padding: '9px 10px',
-    background: 'var(--bg)',
-    border: '1.5px solid var(--border-strong)',
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '8px',
     fontSize: '13px',
     color: 'var(--text)',
     outline: 'none',
     boxSizing: 'border-box',
+    fontFamily: 'Inter, sans-serif',
   };
 
   return (
@@ -123,7 +154,7 @@ export default function CashScreen() {
 
       {/* NEW ENTRY FORM */}
       {showForm && (
-        <div className="card" style={{ border: '1.5px solid var(--gold-border)', background: 'var(--gold-bg)' }}>
+        <div className="card" style={{ border: '1px solid var(--gold-border)', background: 'var(--gold-dim)' }}>
           <div className="sec-label" style={{ marginBottom: '10px' }}>New Cash Entry</div>
 
           {/* Particulars */}
@@ -148,9 +179,9 @@ export default function CashScreen() {
                   onClick={() => setForm({ ...form, type: t })}
                   style={{
                     flex: 1, padding: '8px',
-                    background: form.type === t ? (t === 'IN' ? '#E8F5E9' : '#FFEBEE') : 'var(--bg)',
+                    background: form.type === t ? (t === 'IN' ? 'var(--green-bg)' : 'var(--red-bg)') : 'rgba(255,255,255,0.04)',
                     color: form.type === t ? (t === 'IN' ? 'var(--green)' : 'var(--red)') : 'var(--text-3)',
-                    border: `1.5px solid ${form.type === t ? (t === 'IN' ? 'var(--green)' : 'var(--red)') : 'var(--border)'}`,
+                    border: `1px solid ${form.type === t ? (t === 'IN' ? 'var(--green)' : 'var(--red)') : 'var(--border)'}`,
                     borderRadius: '8px',
                     fontSize: '13px',
                     fontWeight: '700',
@@ -187,7 +218,7 @@ export default function CashScreen() {
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             padding: '10px 12px', borderRadius: '8px',
-            background: netTotal > 0 ? (form.type === 'IN' ? '#E8F5E9' : '#FFEBEE') : 'var(--bg)',
+            background: netTotal > 0 ? (form.type === 'IN' ? 'var(--green-bg)' : 'var(--red-bg)') : 'rgba(255,255,255,0.04)',
             marginBottom: '10px',
           }}>
             <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-2)' }}>Total Amount</span>
@@ -197,7 +228,7 @@ export default function CashScreen() {
           </div>
 
           {error && (
-            <div style={{ padding: '8px 10px', background: '#FFEBEE', borderRadius: '6px', fontSize: '11px', color: 'var(--red)', marginBottom: '8px', fontWeight: '600' }}>
+            <div style={{ padding: '8px 10px', background: 'var(--red-bg)', borderRadius: '6px', fontSize: '11px', color: 'var(--red)', marginBottom: '8px', fontWeight: '600' }}>
               ⚠️ {error}
             </div>
           )}

@@ -70,10 +70,10 @@ export default function PendingScreen() {
               padding: '6px 12px',
               borderRadius: '20px',
               border: '0.5px solid var(--border)',
-              background: activeTab === tab.key ? 'var(--gold)' : 'transparent',
-              color: activeTab === tab.key ? '#000' : 'var(--text-2)',
+              background: activeTab === tab.key ? 'var(--gold)' : 'rgba(255,255,255,0.04)',
+              color: activeTab === tab.key ? '#0A0F1E' : 'var(--text-3)',
               fontSize: '10px',
-              fontWeight: '600',
+              fontWeight: '700',
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}>
@@ -109,13 +109,14 @@ export default function PendingScreen() {
             marginBottom: '10px',
             paddingBottom: '10px',
             borderBottom: '0.5px solid var(--border)',
-            background: `linear-gradient(90deg, ${e.type === 'Purchase' ? 'var(--green-bg)' : 'var(--red-bg)'}, transparent)`,
+            background: e.type === 'Purchase' ? 'var(--green-bg)' : 'var(--red-bg)',
             padding: '10px 12px',
             margin: '-12px -16px 10px',
-            borderRadius: '8px 8px 0 0'
+            borderRadius: '8px 8px 0 0',
+            borderBottom: `1px solid ${e.type === 'Purchase' ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
           }}>
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A2E' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>
                 {e.party || '—'}
               </div>
               <div style={{ fontSize: '10px', color: 'var(--text-3)', marginTop: '2px' }}>
@@ -148,7 +149,7 @@ export default function PendingScreen() {
           {/* RATE & AMOUNT */}
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-2)' }}>
             <span>Rate: ₹{(e.rate || 0).toLocaleString('en-IN')}</span>
-            <span style={{ fontWeight: 600, color: '#1A1A2E' }}>
+            <span style={{ fontWeight: 600, color: 'var(--text)' }}>
               ₹{(e.amount || 0).toLocaleString('en-IN')}
             </span>
           </div>
