@@ -27,22 +27,21 @@ export default function CashScreen() {
   }).replace(/ /g, '-');
 
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('cash_ledger')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (!error && data) {
+        setAllEntries(data);
+        setTodayEntries(data.filter(e => e.date === today));
+      }
+      setLoading(false);
+    };
     fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('cash_ledger')
-      .select('*')
-      .order('id', { ascending: false });
-
-    if (!error && data) {
-      setAllEntries(data);
-      setTodayEntries(data.filter(e => e.date === today));
-    }
-    setLoading(false);
-  };
+  }, [today]);
 
   const balance = allEntries.reduce((s, e) => s + (e.total || 0), 0);
   const netTotal = calcTotal(form);
