@@ -108,7 +108,6 @@ export default function PendingScreen() {
             alignItems: 'flex-start',
             marginBottom: '10px',
             paddingBottom: '10px',
-            borderBottom: '0.5px solid var(--border)',
             background: e.type === 'Purchase' ? 'var(--green-bg)' : 'var(--red-bg)',
             padding: '10px 12px',
             margin: '-12px -16px 10px',
