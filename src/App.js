@@ -6,8 +6,37 @@ import PendingScreen from './screens/PendingScreen';
 import StatementScreen from './screens/StatementScreen';
 import AnalyticsScreen from './screens/AnalyticsScreen';
 
+function useMetalPrices() {
+  const [prices, setPrices] = useState({ xau: null, xag: null, xauTrend: 0, xagTrend: 0, loading: true });
+  useEffect(() => {
+    let cancelled = false;
+    const fetchPrices = () => {
+      const c1 = new AbortController(), c2 = new AbortController();
+      Promise.all([
+        fetch('https://api.gold-api.com/price/XAU', { signal: c1.signal }).then(r => r.ok ? r.json() : Promise.reject()),
+        fetch('https://api.gold-api.com/price/XAG', { signal: c2.signal }).then(r => r.ok ? r.json() : Promise.reject()),
+      ]).then(([g, s]) => {
+        if (cancelled) return;
+        const xau = parseFloat(g.price), xag = parseFloat(s.price);
+        setPrices(prev => ({
+          xau: isNaN(xau) ? prev.xau : xau,
+          xag: isNaN(xag) ? prev.xag : xag,
+          xauTrend: (!isNaN(xau) && prev.xau) ? (xau > prev.xau ? 1 : xau < prev.xau ? -1 : prev.xauTrend) : prev.xauTrend,
+          xagTrend: (!isNaN(xag) && prev.xag) ? (xag > prev.xag ? 1 : xag < prev.xag ? -1 : prev.xagTrend) : prev.xagTrend,
+          loading: false,
+        }));
+      }).catch(() => { if (!cancelled) setPrices(prev => ({ ...prev, loading: false })); });
+    };
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 15000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
+  return prices;
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('cash');
+  const metalPrices = useMetalPrices();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
@@ -237,6 +266,31 @@ export default function App() {
               borderRadius: '8px', padding: '6px 12px', fontSize: '11px', fontWeight: '700',
               cursor: 'pointer', color: '#EF4444', letterSpacing: '0.3px',
             }}>Logout</button>
+          </div>
+        </div>
+        {/* LIVE RATES TICKER */}
+        <div style={{ overflow: 'hidden', marginTop: '6px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '5px' }}>
+          <div style={{ display: 'inline-flex', animation: 'tickerScroll 18s linear infinite', whiteSpace: 'nowrap' }}>
+            {[0, 1].map(rep => (
+              <div key={rep} style={{ display: 'inline-flex', gap: '16px', paddingRight: '16px' }}>
+                <span style={{ fontSize: '10px', color: '#8A9BBE' }}>
+                  XAU/USD &nbsp;
+                  <span style={{ fontWeight: '700', color: metalPrices.xauTrend === 1 ? '#10B981' : metalPrices.xauTrend === -1 ? '#EF4444' : '#D4AF37' }}>
+                    {metalPrices.xauTrend === 1 ? '▲ ' : metalPrices.xauTrend === -1 ? '▼ ' : ''}
+                    {metalPrices.xau ? `$${metalPrices.xau.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
+                  </span>
+                </span>
+                <span style={{ color: '#1E2A40' }}>|</span>
+                <span style={{ fontSize: '10px', color: '#8A9BBE' }}>
+                  XAG/USD &nbsp;
+                  <span style={{ fontWeight: '700', color: metalPrices.xagTrend === 1 ? '#10B981' : metalPrices.xagTrend === -1 ? '#EF4444' : '#D4AF37' }}>
+                    {metalPrices.xagTrend === 1 ? '▲ ' : metalPrices.xagTrend === -1 ? '▼ ' : ''}
+                    {metalPrices.xag ? `$${metalPrices.xag.toLocaleString('en-US', { minimumFractionDigits: 3 })}` : '—'}
+                  </span>
+                </span>
+                <span style={{ color: '#1E2A40' }}>|</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -234,3 +234,9 @@ input:focus, select:focus { outline: none; }
 
 /* ── SCROLLBAR ── */
 .screen-wrap::-webkit-scrollbar { width: 0; }
+
+/* ── TICKER ── */
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
