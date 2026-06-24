@@ -60,7 +60,7 @@ export default function StatementScreen() {
     const os = parseFloat(e.amt_os) || 0;
     const part = parseFloat(e.part_received) || 0;
     const due = parseFloat(e.due_balance) || 0;
-    return sum + Math.max(0, os - part - due);
+    return sum + (os - part - due);
   }, 0);
 
   const metalColor = (metal) => metal === 'Gold'
