@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 
-const GOLD_COLORS_DARK = ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EF4444','#06B6D4','#A16207'];
-  const SILVER_COLORS_DARK = ['#94A3B8','#64748B'];
-
 export default function AnalyticsScreen() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
