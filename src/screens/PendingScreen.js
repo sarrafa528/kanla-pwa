@@ -140,7 +140,7 @@ export default function PendingScreen() {
             <span style={{ color: 'var(--text-2)' }}>
               {e.metal} · {e.purity}
             </span>
-            <span style={{ fontWeight: 700, fontSize: '13px', color: '#1A1A2E' }}>
+            <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text)' }}>
               {fmtWt(e.weight)} g
             </span>
           </div>
