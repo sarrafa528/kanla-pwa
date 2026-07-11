@@ -247,12 +247,9 @@ export default function App() {
     <div className="app">
       {/* HEADER */}
       <div className="header">
-        <div className="header-shyam">— JAI SHREE SHYAM —</div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div className="header-brand">Kanla Corporation</div>
-            <div className="header-sub">{user.name} · {user.role}</div>
-          </div>
+        <div className="header-brand-center">Kanla Corporation</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+          <div className="header-sub">{user.name} · {user.role}</div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <div className="sync-indicator">
               <span className="sync-dot" />
@@ -265,8 +262,9 @@ export default function App() {
             }}>Logout</button>
           </div>
         </div>
+        <div className="header-shyam">— JAI SHREE SHYAM —</div>
         {/* LIVE RATES TICKER */}
-        <div style={{ overflow: 'hidden', marginTop: '6px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '5px' }}>
+        <div style={{ overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '5px' }}>
           <div style={{ display: 'inline-flex', animation: 'tickerScroll 18s linear infinite', whiteSpace: 'nowrap' }}>
             {[0, 1].map(rep => (
               <div key={rep} style={{ display: 'inline-flex', gap: '16px', paddingRight: '16px' }}>
