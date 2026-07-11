@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+/* FIX: pehle yahan @import se Inter font dobara load ho raha tha (index.html mein
+   already <link> se load ho raha hai) — @import render-blocking hota hai aur font
+   do baar load hone se thoda slow/flicker ho sakta tha. Ab sirf index.html se load hota hai. */
 
 :root {
   --bg: #070B14;
@@ -30,15 +32,32 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+/* FIX: html/body pe overscroll-behavior:none — isse pura page "rubber-band bounce" nahi
+   karega jab tu top/bottom se aage kheenchta hai. Yeh bounce hi sabse zyada "browser mein
+   hoon" wala feel deta hai — native apps mein yeh nahi hota. */
+html {
+  height: 100%;
+  overscroll-behavior: none;
+  background: #070B14;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Inter', -apple-system, sans-serif;
-  min-height: 100vh;
+  height: 100%;
   max-width: 480px;
   margin: 0 auto;
   overflow-x: hidden;
+  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 /* ── APP SHELL ── */
@@ -49,6 +68,7 @@ body {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 10px 16px 8px;
+  padding-top: calc(10px + env(safe-area-inset-top));
   position: sticky; top: 0; z-index: 100;
   backdrop-filter: blur(20px);
 }
@@ -69,6 +89,9 @@ body {
   scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
+
+/* FIX: tab switch pe fade retrigger ho, isliye App.js mein content ko key={activeTab} diya */
+.screen-content { animation: fadeIn 0.22s ease; }
 
 /* ── CARDS ── */
 .card {
@@ -186,7 +209,6 @@ body {
   to { width: 200px; height: 200px; opacity: 0; }
 }
 
-.screen-wrap { animation: fadeIn 0.25s ease; }
 .card { animation: fadeUp 0.3s ease both; }
 .card:nth-child(1) { animation-delay: 0s; }
 .card:nth-child(2) { animation-delay: 0.04s; }

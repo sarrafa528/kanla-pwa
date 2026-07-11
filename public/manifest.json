@@ -14,16 +14,29 @@
       "purpose": "any"
     },
     {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#B8860B",
-  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "theme_color": "#070B14",
+  "background_color": "#070B14",
   "scope": "/",
   "description": "KanlaERP - Professional Bullion Trading Management System"
 }

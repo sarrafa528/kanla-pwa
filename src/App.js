@@ -128,12 +128,10 @@ export default function App() {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       height: '100vh', background: '#070B14', padding: '24px', position: 'relative', overflow: 'hidden',
     }}>
-      {/* Background decoration */}
       <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '300px', height: '300px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '250px', height: '250px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
       <div style={{ width: '100%', maxWidth: '360px' }}>
-        {/* Logo */}
         <div className="login-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{
             width: '64px', height: '64px', borderRadius: '18px',
@@ -147,7 +145,6 @@ export default function App() {
           <div style={{ fontSize: '9px', color: 'rgba(212,175,55,0.5)', marginTop: '8px', letterSpacing: '3px', fontStyle: 'italic' }}>— JAI SHREE SHYAM —</div>
         </div>
 
-        {/* Form */}
         <div className="login-form" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
             <div style={{ fontSize: '10px', color: '#4A5878', marginBottom: '6px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>User ID</div>
@@ -306,17 +303,19 @@ export default function App() {
             <div style={{ fontSize: '18px', transform: `rotate(${pullRefresh * 2}deg)`, transition: 'transform 0.1s linear' }}>⟳</div>
           </div>
         )}
-        {activeTab === 'cash' && <CashScreen />}
-        {activeTab === 'analytics' && <AnalyticsScreen />}
-        {activeTab === 'booking' && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '12px' }}>
-            <div style={{ fontSize: '40px' }}>📋</div>
-            <div style={{ fontSize: '14px', fontWeight: '700', color: '#8A9BBE' }}>Booking</div>
-            <div style={{ fontSize: '11px', color: '#4A5878' }}>Coming soon</div>
-          </div>
-        )}
-        {activeTab === 'pending' && <PendingScreen />}
-        {activeTab === 'statement' && <StatementScreen />}
+        <div key={activeTab} className="screen-content">
+          {activeTab === 'cash' && <CashScreen />}
+          {activeTab === 'analytics' && <AnalyticsScreen />}
+          {activeTab === 'booking' && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '12px' }}>
+              <div style={{ fontSize: '40px' }}>📋</div>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: '#8A9BBE' }}>Booking</div>
+              <div style={{ fontSize: '11px', color: '#4A5878' }}>Coming soon</div>
+            </div>
+          )}
+          {activeTab === 'pending' && <PendingScreen />}
+          {activeTab === 'statement' && <StatementScreen />}
+        </div>
       </div>
 
       {/* BOTTOM NAV */}
