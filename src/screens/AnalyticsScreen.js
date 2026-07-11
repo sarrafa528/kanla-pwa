@@ -3,11 +3,40 @@ import { supabase } from '../supabaseClient';
 
 export default function AnalyticsScreen() {
   const [summary, setSummary] = useState(null);
+  const [cashBalance, setCashBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
+    fetchCashBalance();
+
+    // BUG FIX: pehle Cash Available tile sirf vault_summary.cash_in_hand se aati thi,
+    // jo sirf desktop ERP khule hone par update hoti thi. Ab cash_ledger se directly
+    // live calculate hoti hai — PWA se entry karne par turant sahi dikhega, ERP khula ho ya nahi.
+    const channel = supabase
+      .channel('cash_ledger_analytics')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'cash_ledger' },
+        () => { fetchCashBalance(); }
+      )
+      .on('postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'cash_ledger' },
+        () => { fetchCashBalance(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
+
+  const fetchCashBalance = async () => {
+    const { data, error } = await supabase
+      .from('cash_ledger')
+      .select('total');
+    if (!error && data) {
+      const bal = data.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+      setCashBalance(bal);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -163,7 +192,7 @@ export default function AnalyticsScreen() {
           }}>₹</div>
           <div style={{fontSize:'9px', color:'var(--text-3)', textTransform:'uppercase', letterSpacing:'0.5px'}}>Cash Available</div>
           <div style={{fontSize:'16px', fontWeight:800, color:'var(--green)', marginTop:'2px'}}>
-            ₹{(summary.cash_in_hand || 0).toLocaleString('en-IN', {maximumFractionDigits:0})}
+            ₹{cashBalance.toLocaleString('en-IN', {maximumFractionDigits:0})}
           </div>
         </div>
 
