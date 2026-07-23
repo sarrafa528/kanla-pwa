@@ -9,6 +9,7 @@ export default function BankTranScreen() {
   const [txns, setTxns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showAccounts, setShowAccounts] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -118,9 +119,12 @@ export default function BankTranScreen() {
         </button>
       </div>
 
-      {/* ACCOUNTS (view only) */}
-      <div className="sec-label" style={{ margin: '14px 4px 8px' }}>Bank Accounts</div>
-      {loading ? (
+      {/* ACCOUNTS (collapsible, view only) */}
+      <div onClick={() => setShowAccounts(!showAccounts)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '14px 4px 8px', cursor: 'pointer' }}>
+        <span className="sec-label" style={{ margin: 0 }}>Bank Accounts ({accounts.length})</span>
+        <span style={{ fontSize: '11px', color: 'var(--gold)', fontWeight: 700 }}>{showAccounts ? '▲ Hide' : '▼ Show'}</span>
+      </div>
+      {showAccounts && (loading ? (
         [...Array(2)].map((_, i) => (
           <div className="skeleton-card" key={i}>
             <div className="skeleton-line w80"></div>
@@ -144,7 +148,7 @@ export default function BankTranScreen() {
             <div style={{ fontSize: '15px', fontWeight: 800, color: bal >= 0 ? 'var(--green)' : 'var(--red)' }}>{fmt(bal)}</div>
           </div>
         );
-      })}
+      }))}
 
       {/* TRANSACTIONS */}
       <div className="sec-label" style={{ margin: '14px 4px 8px' }}>Transfer Records</div>
