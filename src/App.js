@@ -5,6 +5,8 @@ import CashScreen from './screens/CashScreen';
 import PendingScreen from './screens/PendingScreen';
 import StatementScreen from './screens/StatementScreen';
 import AnalyticsScreen from './screens/AnalyticsScreen';
+import TradingCapitalScreen from './screens/TradingCapitalScreen';
+import BankTranScreen from './screens/BankTranScreen';
 
 function useMetalPrices() {
   const [prices, setPrices] = useState({ xau: null, xag: null, xauTrend: 0, xagTrend: 0, loading: true });
@@ -304,13 +306,8 @@ export default function App() {
         <div key={activeTab} className="screen-content">
           {activeTab === 'cash' && <CashScreen />}
           {activeTab === 'analytics' && <AnalyticsScreen />}
-          {activeTab === 'booking' && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '12px' }}>
-              <div style={{ fontSize: '40px' }}>📋</div>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: '#8A9BBE' }}>Booking</div>
-              <div style={{ fontSize: '11px', color: '#4A5878' }}>Coming soon</div>
-            </div>
-          )}
+          {activeTab === 'capital' && <TradingCapitalScreen />}
+          {activeTab === 'banktran' && <BankTranScreen />}
           {activeTab === 'pending' && <PendingScreen />}
           {activeTab === 'statement' && <StatementScreen />}
         </div>
@@ -319,7 +316,8 @@ export default function App() {
       {/* BOTTOM NAV */}
       <div className="bnav">
         {[
-          { key: 'booking', label: 'Booking', icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg> },
+          { key: 'capital', label: 'Capital', icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.1 1.34-2 3-2s3 .9 3 2-1.34 2-3 2-3 .9-3 2 1.34 2 3 2 3-.9 3-2"/></svg> },
+          { key: 'banktran', label: 'Bank Tran.', icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><line x1="5" y1="21" x2="5" y2="10"/><line x1="19" y1="21" x2="19" y2="10"/><polygon points="12 3 21 9 3 9"/><line x1="9" y1="21" x2="9" y2="10"/><line x1="15" y1="21" x2="15" y2="10"/></svg> },
           { key: 'pending', label: 'Pending', icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
           { key: 'statement', label: 'Statement', icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> },
           { key: 'analytics', label: 'Analytics', icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> },
