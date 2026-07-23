@@ -37,7 +37,7 @@ function useMetalPrices() {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('cash');
+  const [activeTab, setActiveTab] = useState('pending');
   const metalPrices = useMetalPrices();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
