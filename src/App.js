@@ -51,6 +51,7 @@ export default function App() {
   const [pullRefresh, setPullRefresh] = useState(0);
   const [isPulling, setIsPulling] = useState(false);
   const [pullStartY, setPullStartY] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const saved = localStorage.getItem('kanla_pwa_user');
@@ -94,7 +95,11 @@ export default function App() {
     if (diff > 0 && e.target.scrollTop === 0) { setIsPulling(true); setPullRefresh(Math.min(diff, 120)); }
   };
   const handlePullEnd = async () => {
-    if (pullRefresh > 60) { setLastSync(new Date()); await new Promise(r => setTimeout(r, 800)); }
+    if (pullRefresh > 60) {
+      setLastSync(new Date());
+      setRefreshKey(k => k + 1); // remounts the active screen below, re-running its fetchData()
+      await new Promise(r => setTimeout(r, 800));
+    }
     setIsPulling(false); setPullRefresh(0);
   };
 
@@ -303,7 +308,7 @@ export default function App() {
             <div style={{ fontSize: '18px', transform: `rotate(${pullRefresh * 2}deg)`, transition: 'transform 0.1s linear' }}>⟳</div>
           </div>
         )}
-        <div key={activeTab} className="screen-content">
+        <div key={`${activeTab}-${refreshKey}`} className="screen-content">
           {activeTab === 'cash' && <CashScreen />}
           {activeTab === 'analytics' && <AnalyticsScreen />}
           {activeTab === 'capital' && <TradingCapitalScreen />}
