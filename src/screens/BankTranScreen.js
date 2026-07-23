@@ -85,13 +85,23 @@ export default function BankTranScreen() {
     };
     const { error: insertError } = await supabase.from('bank_transactions').insert(entry);
     if (insertError) {
-      setError('Save nahi hua, dobara try karo');
+      console.error('Insert error:', insertError);
+      setError(`Save nahi hua: ${insertError.message || 'dobara try karo'}`);
     } else {
       setTxns(prev => [entry, ...prev]);
       setForm({ ...emptyForm });
       setShowModal(false);
     }
     setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    const { error: delError } = await supabase.from('bank_transactions').delete().eq('id', id);
+    if (!delError) {
+      setTxns(prev => prev.filter(t => t.id !== id));
+    } else {
+      console.error('Delete error:', delError);
+    }
   };
 
   const inp = {
@@ -172,7 +182,10 @@ export default function BankTranScreen() {
             </div>
             <div style={{ fontSize: '10px', color: 'var(--text-3)', marginTop: '2px' }}>{t.date}{t.note ? ` · ${t.note}` : ''}</div>
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--blue)' }}>{fmt(t.amount)}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--blue)' }}>{fmt(t.amount)}</div>
+            <button onClick={() => handleDelete(t.id)} style={{ background: 'var(--red-bg)', color: 'var(--red)', border: 'none', borderRadius: '6px', width: '24px', height: '24px', fontSize: '11px', cursor: 'pointer', flexShrink: 0 }}>✕</button>
+          </div>
         </div>
       ))}
 
