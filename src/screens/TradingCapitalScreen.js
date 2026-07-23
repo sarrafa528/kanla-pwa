@@ -24,6 +24,7 @@ export default function TradingCapitalScreen() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchSummary = async () => {
