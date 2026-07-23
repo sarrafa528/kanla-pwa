@@ -2,7 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 
 const todayStr = () => new Date().toISOString().split('T')[0];
-const emptyForm = { date: todayStr(), fromId: '', fromOther: '', toId: '', toOther: '', amount: '', note: '' };
+const emptyForm = { date: todayStr(), fromId: '', fromOther: '', toId: '', toOther: '', amount: '', note: '', d500: '', d200: '', d100: '', d50: '', d20: '', d10: '' };
+
+const DENOMS = [500, 200, 100, 50, 20, 10];
+const calcDenomTotal = (form) => DENOMS.reduce((sum, d) => sum + ((parseFloat(form[`d${d}`]) || 0) * d), 0);
+
+// Matches KanlaERP's Cash Ledger date convention (e.g. "23-Jul-26")
+const toCashDate = (isoDate) => {
+  const d = new Date(isoDate);
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-');
+};
 
 export default function BankTranScreen() {
   const [accounts, setAccounts] = useState([]);
@@ -63,12 +72,17 @@ export default function BankTranScreen() {
 
   const totalBalance = accounts.reduce((s, a) => s + accountBalance(a.id), 0);
 
+  const simpleLabel = (acc) => `${acc.holder_name} (${acc.bank_name})`;
+
   const handleSave = async () => {
-    if (!parseFloat(form.amount)) { setError('Amount daalo!'); return; }
-    const fromAcc = form.fromId && form.fromId !== 'other' ? accounts.find(a => a.id === parseInt(form.fromId)) : null;
-    const toAcc = form.toId && form.toId !== 'other' ? accounts.find(a => a.id === parseInt(form.toId)) : null;
-    const fromLabel = form.fromId === 'other' ? form.fromOther.trim() : (fromAcc ? accountLabel(fromAcc) : '');
-    const toLabel = form.toId === 'other' ? form.toOther.trim() : (toAcc ? accountLabel(toAcc) : '');
+    const involvesCash = form.fromId === 'cash' || form.toId === 'cash';
+    const amount = involvesCash ? calcDenomTotal(form) : parseFloat(form.amount);
+    if (!amount) { setError(involvesCash ? 'Koi denomination nahi dali!' : 'Amount daalo!'); return; }
+
+    const fromAcc = (form.fromId && form.fromId !== 'other' && form.fromId !== 'cash') ? accounts.find(a => a.id === parseInt(form.fromId)) : null;
+    const toAcc = (form.toId && form.toId !== 'other' && form.toId !== 'cash') ? accounts.find(a => a.id === parseInt(form.toId)) : null;
+    const fromLabel = form.fromId === 'cash' ? 'Cash' : form.fromId === 'other' ? form.fromOther.trim() : (fromAcc ? accountLabel(fromAcc) : '');
+    const toLabel = form.toId === 'cash' ? 'Cash' : form.toId === 'other' ? form.toOther.trim() : (toAcc ? accountLabel(toAcc) : '');
     if (!fromLabel || !toLabel) { setError('From aur To dono select/bharo!'); return; }
 
     setError('');
@@ -80,18 +94,45 @@ export default function BankTranScreen() {
       to_acc_id: toAcc ? toAcc.id : null,
       from_label: fromLabel,
       to_label: toLabel,
-      amount: parseFloat(form.amount),
+      amount,
       note: form.note,
     };
     const { error: insertError } = await supabase.from('bank_transactions').insert(entry);
     if (insertError) {
       console.error('Insert error:', insertError);
       setError(`Save nahi hua: ${insertError.message || 'dobara try karo'}`);
-    } else {
-      setTxns(prev => [entry, ...prev]);
-      setForm({ ...emptyForm });
-      setShowModal(false);
+      setSaving(false);
+      return;
     }
+
+    setTxns(prev => [entry, ...prev]);
+
+    // Cash involved → auto-create the matching Cash Ledger entry in Supabase
+    if (involvesCash) {
+      const isWithdraw = form.toId === 'cash'; // bank → cash = withdrawal = Cash Ledger IN
+      const otherAcc = isWithdraw ? fromAcc : toAcc;
+      const otherLabel = otherAcc ? simpleLabel(otherAcc) : (isWithdraw ? form.fromOther : form.toOther) || 'Account';
+      const type = isWithdraw ? 'IN' : 'OUT';
+      const sign = isWithdraw ? 1 : -1;
+      const cashEntry = {
+        id: Date.now() + 1,
+        date: toCashDate(form.date),
+        particulars: `${otherLabel} & ${isWithdraw ? 'Withdraw' : 'Deposit'}`,
+        type,
+        d500: sign * (parseFloat(form.d500) || 0),
+        d200: sign * (parseFloat(form.d200) || 0),
+        d100: sign * (parseFloat(form.d100) || 0),
+        d50: sign * (parseFloat(form.d50) || 0),
+        d20: sign * (parseFloat(form.d20) || 0),
+        d10: sign * (parseFloat(form.d10) || 0),
+        total: sign * amount,
+      };
+      const { error: cashError } = await supabase.from('cash_ledger').insert(cashEntry);
+      if (cashError) console.error('Cash ledger insert error:', cashError);
+    }
+
+    setForm({ ...emptyForm });
+    setShowModal(false);
     setSaving(false);
   };
 
@@ -208,6 +249,7 @@ export default function BankTranScreen() {
               <select style={inp} value={form.fromId} onChange={e => setForm({ ...form, fromId: e.target.value })}>
                 <option value="">Select account</option>
                 {accounts.map(a => <option key={a.id} value={a.id}>{accountLabel(a)}</option>)}
+                <option value="cash">💵 Cash</option>
                 <option value="other">Other / Not listed</option>
               </select>
             </div>
@@ -223,6 +265,7 @@ export default function BankTranScreen() {
               <select style={inp} value={form.toId} onChange={e => setForm({ ...form, toId: e.target.value })}>
                 <option value="">Select account</option>
                 {accounts.map(a => <option key={a.id} value={a.id}>{accountLabel(a)}</option>)}
+                <option value="cash">💵 Cash</option>
                 <option value="other">Other / Not listed</option>
               </select>
             </div>
@@ -233,10 +276,28 @@ export default function BankTranScreen() {
               </div>
             )}
 
-            <div style={{ marginBottom: '10px' }}>
-              <div style={lbl}>AMOUNT (₹)</div>
-              <input type="number" inputMode="numeric" style={inp} value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="50000" />
-            </div>
+            {(form.fromId === 'cash' || form.toId === 'cash') ? (
+              <div style={{ marginBottom: '10px' }}>
+                <div style={lbl}>DENOMINATION (notes count)</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                  {DENOMS.map(d => (
+                    <div key={d}>
+                      <div style={{ fontSize: '10px', color: 'var(--text-3)', marginBottom: '3px', fontWeight: '600' }}>₹{d} notes</div>
+                      <input type="number" inputMode="numeric" style={{ ...inp, textAlign: 'center' }} value={form[`d${d}`]} onChange={e => setForm({ ...form, [`d${d}`]: e.target.value })} placeholder="0" />
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '8px', background: 'var(--gold-dim)' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-2)' }}>{form.toId === 'cash' ? '💵 Cash Withdrawal' : '🏦 Cash Deposit'}</span>
+                  <span style={{ fontSize: '17px', fontWeight: '800', color: 'var(--gold)' }}>₹{calcDenomTotal(form).toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            ) : (
+              <div style={{ marginBottom: '10px' }}>
+                <div style={lbl}>AMOUNT (₹)</div>
+                <input type="number" inputMode="numeric" style={inp} value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="50000" />
+              </div>
+            )}
 
             <div style={{ marginBottom: '14px' }}>
               <div style={lbl}>NOTE (optional)</div>
